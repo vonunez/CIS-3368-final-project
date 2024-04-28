@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/legacy.png" />
+
+    <title>Welcome to the Daycare Management System</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body style="background-image: url('/assets/background.jpeg'); background-size: cover;">
+
+    <div class="container-fluid mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="card bg-transparent text-dark p-4" style="border-radius: 20px; backdrop-filter: blur(10px); background-color: rgba(128, 128, 128, 0.5);">
+                    <h1 class="text-center mb-4" style="color: #8B4513;">Westeros Daycare Management System</h1>
+                    <!-- Circle image -->
+                    <div class="text-center">
+                        <img src="/assets/picture-1.png" alt="Your Image" class="img-fluid rounded-circle mt-3" style="max-width: 200px;">
+                    </div>
+                    <hr class="bg-white">
+                    <!-- Login Form -->
+                    <form id="loginForm" style="background-color: rgba(128, 128, 128, 0.7); padding: 20px; border-radius: 10px;">
+                        <div class="form-group">
+                            <label for="username" class="text-white">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="text-white">Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-light toggle-password" type="button">
+                                        <i class="fas fa-eye" aria-hidden="true" style="color: #495057;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        <!-- Error message container -->
+                        <div id="errorMessage" class="text-danger mt-2"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Function to toggle password visibility
+        jQuery(document).ready(function() {
+            jQuery('.toggle-password').click(function() {
+                var passwordInput = jQuery('#password');
+                var passwordInputType = passwordInput.attr('type');
+                // Toggle password visibility
+                if (passwordInputType === 'password') {
+                    passwordInput.attr('type', 'text');
+                } else {
+                    passwordInput.attr('type', 'password');
+                }
+                // Toggle eye icon class
+                jQuery(this).find('i').toggleClass('fa-eye fa-eye-slash');
+            });
+        });
+
+        // Handle form submission
+        jQuery(document).ready(function() {
+            jQuery('#loginForm').submit(function(event) {
+                event.preventDefault();
+                var username = jQuery('#username').val();
+                var password = jQuery('#password').val();
+                // Send login request to backend
+                jQuery.ajax({
+                    url: '/login', // URL to your backend login route
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username: username, password: password }),
+                    success: function(response) {
+                        // Redirect to dashboard upon successful login
+                        window.location.href = '/dashboard'; // Redirect to dashboard
+                    },
+                    error: function(error) {
+                        // Handle login error
+                        console.error('Login error:', error);
+                        // Display error message
+                        jQuery('#errorMessage').text('Username or password is incorrect.');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        /* Game of Thrones Theme Color Scheme */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: transparent; /* Background color */
+            color: white; /* Default text color */
+        }
+
+        .btn-primary {
+            background-color: #67331E !important;
+            border-color: #67331E !important;
+        }
+
+        /* Change button color on hover */
+        .btn-primary:hover {
+            background-color: #8B4513 !important;
+            border-color: #8B4513 !important;
+        }
+
+        /* Remove line before the eye icon */
+        .input-group .input-group-append {
+            flex: 0 0 auto;
+        }
+    </style>
+</body>
+</html>

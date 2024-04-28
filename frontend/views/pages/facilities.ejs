@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('../partials/head.ejs') %>
+
+<body>
+
+<%- include('../partials/header.ejs') %>
+
+<div class="container">
+    <h1>Facilities</h1>
+    <h2>All Facilities</h2>
+    <div class="facility-list">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th> <!-- Facility Number -->
+                        <th>Facility Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (facilities && facilities.length > 0) { %>
+                        <% facilities.forEach((facility, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td> <!-- Facility Number starts from 1 -->
+                                <td><%= facility.name %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="2">No facilities found</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#add">Add</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#update">Update</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#delete">Delete</a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Add Facility Form -->
+        <div id="add" class="tab-pane fade show active">
+            <h2>Add Facility</h2>
+            <!-- Add Facility Form -->
+            <form id="addFacilityForm">
+                <div class="form-group">
+                    <label for="facilityName">Facility Name:</label>
+                    <input type="text" class="form-control" id="facilityName" name="facilityName" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Facility</button>
+                <div class="text-success" id="addFacilityMessage" style="display: none;"></div> <!-- Success message placeholder -->
+            </form>
+        </div>
+
+        <!-- Update Facility Form -->
+        <div id="update" class="tab-pane fade">
+            <h2>Update Facility</h2>
+            <!-- Update Facility Form -->
+            <form id="updateFacilityForm">
+                <div class="form-group">
+                    <label for="facilitySelectUpdate">Select Facility:</label>
+                    <select class="form-control" id="facilitySelectUpdate" name="facilitySelectUpdate">
+                        <!-- Populate this dropdown with existing facilities -->
+                        <% facilities.forEach(facility => { %>
+                            <option value="<%= facility.id %>"><%= facility.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="updateFacilityName">New Facility Name:</label>
+                    <input type="text" class="form-control" id="updateFacilityName" name="updateFacilityName" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Facility</button>
+                <!-- Success message placeholder -->
+                <div class="text-success" id="updateSuccessMessage" style="display: none;">Facility updated successfully!</div>
+            </form>
+        </div>
+
+        <!-- Delete Facility Form -->
+        <div id="delete" class="tab-pane fade">
+            <h2>Delete Facility</h2>
+            <!-- Delete Facility Form -->
+            <form id="deleteFacilityForm">
+                <div class="form-group">
+                    <label for="deleteFacilitySelect">Select Facility:</label>
+                    <select class="form-control" id="deleteFacilitySelect" name="deleteFacilitySelect">
+                        <!-- Populate this dropdown with existing facilities -->
+                        <% facilities.forEach(facility => { %>
+                            <option value="<%= facility.id %>"><%= facility.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-danger">Delete Facility</button>
+            </form>
+            <div id="deleteSuccessMessage" style="display: none; color: green;">Facility deleted successfully!</div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer.ejs') %>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addFacilityForm = document.getElementById('addFacilityForm');
+        const updateFacilityForm = document.getElementById('updateFacilityForm');
+        const deleteFacilityForm = document.getElementById('deleteFacilityForm');
+        const deleteSuccessMessage = document.getElementById('deleteSuccessMessage');
+
+        addFacilityForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const facilityName = document.getElementById('facilityName').value;
+
+            try {
+                const response = await axios.post('/facilities', { name: facilityName });
+                if (response.status === 200) {
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    console.error('Failed to add facility:', response.statusText);
+                    alert('Failed to add facility. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error adding facility:', error.message);
+                alert('Failed to add facility. Please try again.');
+            }
+        });
+
+        updateFacilityForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const facilityId = document.getElementById('facilitySelectUpdate').value;
+            const facilityName = document.getElementById('updateFacilityName').value;
+
+            try {
+                const response = await axios.put('/facilities', { id: facilityId, name: facilityName });
+                if (response.status === 200) {
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    console.error('Failed to update facility:', response.statusText);
+                    alert('Failed to update facility. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error updating facility:', error.message);
+                alert('Failed to update facility. Please try again.');
+            }
+        });
+
+        deleteFacilityForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const facilityId = document.getElementById('deleteFacilitySelect').value;
+
+            try {
+                const response = await axios.delete('/facilities', { data: { id: facilityId } });
+                if (response.status === 200) {
+                    deleteSuccessMessage.style.display = 'block';
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    console.error('Failed to delete facility:', response.statusText);
+                    alert('Failed to delete facility. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error deleting facility:', error.message);
+                alert('Failed to delete facility. Please try again.');
+            }
+        });
+    });
+</script>
+
+<style>
+
+        /* Add spacing between forms */
+        h1 {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        body {
+            background-color: Ivory; /* Background color */
+            color: Deer; /* Default text color */
+            padding-bottom: 5em;
+        }
+
+        form {
+            padding-bottom: 60px;
+        }
+
+        .form-control {
+            width: 50%; /* Adjust the width as needed */
+        }
+
+        .btn-primary {
+            background-color: #67331E !important;
+            border-color: #67331E !important;
+        }
+
+        /* Change button color on hover */
+        .btn-primary:hover {
+            background-color: #8B4513 !important;
+            border-color: #8B4513 !important;
+        }
+
+        .btn-danger {
+            background-color: #b01030 !important;
+            border-color: #b01030 !important;
+        }
+
+        /* Style for the facilities table */
+        .table-container {
+            max-height: 320px; /* Adjust the height as needed */
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        .nav-link.active {
+            background-color: #8B4513 !important;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: #8B4513 !important;
+        }
+
+        .tab-content {
+            border-top: none;
+            padding: 20px;
+        }
+    </style>
+
+</body>
+</html>

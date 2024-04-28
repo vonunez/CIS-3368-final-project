@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('../partials/head.ejs') %>
+
+<body>
+
+<%- include('../partials/header.ejs') %>
+
+<div class="container">
+    <h1>Classrooms</h1>
+    <h2>All Classrooms</h2>
+    <div class="classroom-list">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th> <!-- Classroom Number -->
+                        <th>Classroom Name</th>
+                        <th>Capacity</th>
+                        <th>Facility Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (classrooms && classrooms.length > 0) { %>
+                        <% classrooms.forEach((classroom, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td> <!-- Classroom Number starts from 1 -->
+                                <td><%= classroom.name %></td>
+                                <td><%= classroom.capacity %></td>
+                                <!-- Display facility name instead of facility ID -->
+                                <% const facility = facilities.find(facility => facility.id === classroom.facility_id); %>
+                                <td><%= facility ? facility.name : 'Unknown Facility' %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4">No classrooms found</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+                
+            </table>
+        </div>
+    </div>
+<!-- Tab Navigation -->
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#add">Add</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#update">Update</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#delete">Delete</a>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content">
+    <!-- Add Classroom Form -->
+    <div id="add" class="tab-pane fade show active">
+        <h2>Add Classroom</h2>
+        <!-- Add Classroom Form -->
+        <form id="addClassroomForm">
+            <div class="form-group">
+                <label for="className">Classroom Name:</label>
+                <input type="text" class="form-control" id="className" name="className" required>
+            </div>
+            <div class="form-group">
+                <label for="capacity">Capacity:</label>
+                <input type="number" class="form-control" id="capacity" name="capacity" required>
+            </div>
+            <div class="form-group">
+                <label for="facility">Facility:</label>
+                <select class="form-control" id="facility" name="facility" required>
+                    <!-- Populate this dropdown dynamically from API -->
+                    <% facilities.forEach(facility => { %>
+                        <option value="<%= facility.id %>"><%= facility.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Classroom</button>
+            <div class="text-success" id="addClassroomMessage" style="display: none;"></div> <!-- Success message placeholder -->
+        </form>
+    </div>
+
+<!-- Update Classroom Form -->
+<div id="update" class="tab-pane fade">
+    <h2>Update Classroom</h2>
+    <!-- Update Classroom Form -->
+    <form id="updateClassroomForm">
+        <div class="form-group">
+            <label for="classroomSelectUpdate">Select Classroom:</label>
+            <select class="form-control" id="classroomSelectUpdate" name="classroomSelectUpdate">
+                <!-- Populate this dropdown with existing classrooms -->
+                <% classrooms.forEach(classroom => { %>
+                    <option value="<%= classroom.id %>"><%= classroom.name %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="updateClassName">New Classroom Name:</label>
+            <input type="text" class="form-control" id="updateClassName" name="updateClassName" required>
+        </div>
+        <div class="form-group">
+            <label for="updateCapacity">New Capacity:</label>
+            <input type="number" class="form-control" id="updateCapacity" name="updateCapacity" required>
+        </div>
+        <div class="form-group">
+            <label for="updateFacility">Facility:</label>
+            <select class="form-control" id="updateFacility" name="updateFacility" required>
+                <!-- Populate this dropdown dynamically from API -->
+                <% facilities.forEach(facility => { %>
+                    <option value="<%= facility.id %>"><%= facility.name %></option>
+                <% }); %>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Classroom</button>
+        <!-- Success message placeholder -->
+        <div class="text-success" id="updateSuccessMessage" style="display: none;">Classroom updated successfully!</div>
+    </form>
+</div>
+
+
+
+    <!-- Delete Classroom Form -->
+    <div id="delete" class="tab-pane fade">
+        <h2>Delete Classroom</h2>
+        <!-- Delete Classroom Form -->
+        <form id="deleteClassroomForm">
+            <div class="form-group">
+                <label for="deleteClassroomSelect">Select Classroom:</label>
+                <select class="form-control" id="deleteClassroomSelect" name="deleteClassroomSelect">
+                    <!-- Populate this dropdown with existing classrooms -->
+                    <% classrooms.forEach(classroom => { %>
+                        <option value="<%= classroom.id %>"><%= classroom.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-danger">Delete Classroom</button>
+        </form>
+        <div id="deleteSuccessMessage" style="display: none; color: green;">Classroom deleted successfully!</div>
+    </div>
+</div>
+</div>
+
+<%- include('../partials/footer.ejs') %>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addClassroomForm = document.getElementById('addClassroomForm');
+        const updateClassroomForm = document.getElementById('updateClassroomForm');
+        const deleteClassroomForm = document.getElementById('deleteClassroomForm');
+        const deleteSuccessMessage = document.getElementById('deleteSuccessMessage');
+
+        addClassroomForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const className = document.getElementById('className').value;
+            const capacity = document.getElementById('capacity').value;
+            const facilityId = document.getElementById('facility').value;
+
+            try {
+                const response = await axios.post('/classrooms', { name: className, capacity: capacity, facility_id: facilityId });
+                if (response.status === 200) {
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    console.error('Failed to add classroom:', response.statusText);
+                    alert('Failed to add classroom. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error adding classroom:', error.message);
+                alert('Failed to add classroom. Please try again.');
+            }
+        });
+
+        updateClassroomForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const classroomId = document.getElementById('classroomSelectUpdate').value;
+    const newClassName = document.getElementById('updateClassName').value;
+    const newCapacity = document.getElementById('updateCapacity').value;
+    const newFacilityId = document.getElementById('updateFacility').value;
+
+    try {
+        const response = await axios.put('/classrooms', { 
+            id: classroomId, 
+            name: newClassName, 
+            capacity: newCapacity, 
+            facility_id: newFacilityId 
+        });
+        if (response.status === 200) {
+            location.reload(); // Reload the page to reflect changes
+        } else {
+            console.error('Failed to update classroom:', response.statusText);
+            alert('Failed to update classroom. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error updating classroom:', error.message);
+        alert('Failed to update classroom. Please try again.');
+    }
+});
+
+
+
+        deleteClassroomForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const classroomId = document.getElementById('deleteClassroomSelect').value;
+
+            try {
+                const response = await axios.delete('/classrooms', { data: { id: classroomId } });
+                if (response.status === 200) {
+                    deleteSuccessMessage.style.display = 'block';
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    console.error('Failed to delete classroom:', response.statusText);
+                    alert('Failed to delete classroom. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error deleting classroom:', error.message);
+                alert('Failed to delete classroom. Please try again.');
+            }
+        });
+    });
+</script>
+<style>
+
+        /* Add spacing between forms */
+        h1 {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        body {
+            background-color: Ivory; /* Background color */
+            color: Deer; /* Default text color */
+            padding-bottom: 5em;
+        }
+
+        form {
+            padding-bottom: 60px;
+        }
+
+        .form-control {
+            width: 50%; /* Adjust the width as needed */
+        }
+
+        .btn-primary {
+            background-color: #67331E !important;
+            border-color: #67331E !important;
+        }
+
+        /* Change button color on hover */
+        .btn-primary:hover {
+            background-color: #8B4513 !important;
+            border-color: #8B4513 !important;
+        }
+
+        .btn-danger {
+            background-color: #b01030 !important;
+            border-color: #b01030 !important;
+        }
+
+        
+
+        /* Style for the facilities table */
+        .table-container {
+            max-height: 310px; /* Adjust the height as needed */
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        .nav-link.active {
+        background-color: #8B4513 !important;
+        color: white !important;
+    }
+
+    .nav-link {
+        color: #8B4513 !important;
+    }
+
+    .tab-content {
+        
+        border-top: none;
+        padding: 20px;
+    }
+
+    .nav-tabs {
+        padding-top: 40px; /* Adjust the value as needed for the desired space */
+    }
+    </style>
+</body>
+
+</html>

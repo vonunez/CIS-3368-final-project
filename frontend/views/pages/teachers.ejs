@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('../partials/head.ejs') %>
+
+<body>
+
+<%- include('../partials/header.ejs') %>
+
+<div class="container">
+    <h1>Teachers</h1>
+    <h2>All Teachers</h2>
+    <div class="teacher-list">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th> <!-- Teacher Number -->
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Room</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (teachers && teachers.length > 0) { %>
+                        <% teachers.forEach((teacher, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td> <!-- Teacher Number starts from 1 -->
+                                <td><%= teacher.firstname %></td>
+                                <td><%= teacher.lastname %></td>
+                                <!-- Display room name instead of room ID -->
+                                <% const classroom = classrooms.find(classroom => classroom.id === teacher.room); %>
+                                <td><%= classroom ? classroom.name : 'Unknown Classroom' %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4">No teachers found</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#addTeacher">Add</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#updateTeacher">Update</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#deleteTeacher">Delete</a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Add Teacher Form -->
+        <div id="addTeacher" class="tab-pane fade show active">
+            <h2>Add Teacher</h2>
+            <!-- Add Teacher Form -->
+            <form id="addTeacherForm">
+                <div class="form-group">
+                    <label for="teacherFirstname">First Name:</label>
+                    <input type="text" class="form-control" id="teacherFirstname" name="teacherFirstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="teacherLastname">Last Name:</label>
+                    <input type="text" class="form-control" id="teacherLastname" name="teacherLastname" required>
+                </div>
+                <div class="form-group">
+                    <label for="teacherRoom">Room:</label>
+                    <select class="form-control" id="teacherRoom" name="teacherRoom" required>
+                        <!-- Populate this dropdown with existing room names -->
+                        <% classrooms.forEach(classroom => { %>
+                            <option value="<%= classroom.id %>"><%= classroom.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Teacher</button>
+                <div class="text-success" id="addTeacherMessage" style="display: none;"></div> <!-- Success message placeholder -->
+            </form>
+            <div id="successMessage" style="display: none; color: green;">Teacher added successfully!</div>
+        </div>
+
+        <!-- Update Teacher Form -->
+        <div id="updateTeacher" class="tab-pane fade">
+            <h2>Update Teacher</h2>
+            <!-- Update Teacher Form -->
+            <form id="updateTeacherForm">
+                <div class="form-group">
+                    <label for="teacherSelectUpdate">Select Teacher:</label>
+                    <select class="form-control" id="teacherSelectUpdate" name="teacherSelectUpdate">
+                        <!-- Populate this dropdown with existing teachers -->
+                        <% teachers.forEach(teacher => { %>
+                            <option value="<%= teacher.id %>"><%= teacher.firstname %> <%= teacher.lastname %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="updateTeacherFirstname">New First Name:</label>
+                    <input type="text" class="form-control" id="updateTeacherFirstname" name="updateTeacherFirstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateTeacherLastname">New Last Name:</label>
+                    <input type="text" class="form-control" id="updateTeacherLastname" name="updateTeacherLastname" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateTeacherRoom">New Room:</label>
+                    <select class="form-control" id="updateTeacherRoom" name="updateTeacherRoom" required>
+                        <!-- Populate this dropdown with existing room names -->
+                        <% classrooms.forEach(classroom => { %>
+                            <option value="<%= classroom.name %>"><%= classroom.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Teacher</button>
+                <div class="text-success" id="updateTeacherMessage" style="display: none;"></div> <!-- Success message placeholder -->
+            </form>
+            <div id="updateSuccessMessage" style="display: none; color: green;">Teacher updated successfully!</div>
+        </div>
+
+        <!-- Delete Teacher Form -->
+        <div id="deleteTeacher" class="tab-pane fade">
+            <h2>Delete Teacher</h2>
+            <!-- Delete Teacher Form -->
+            <form id="deleteTeacherForm">
+                <div class="form-group">
+                    <label for="deleteTeacherId">Select Teacher:</label>
+                    <select class="form-control" id="teacherSelectDelete" name="teacherSelectDelete">
+                        <!-- Populate this dropdown with existing teachers -->
+                        <% teachers.forEach(teacher => { %>
+                            <option value="<%= teacher.id %>"><%= teacher.firstname %> <%= teacher.lastname %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-danger">Delete Teacher</button>
+            </form>
+            <div id="deleteTeacherSuccessMessage" style="display: none; color: green;">Teacher deleted successfully!</div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer.ejs') %>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addTeacherForm = document.getElementById('addTeacherForm');
+        const updateTeacherForm = document.getElementById('updateTeacherForm');
+        const deleteTeacherForm = document.getElementById('deleteTeacherForm');
+        const successMessage = document.getElementById('successMessage');
+        const updateSuccessMessage = document.getElementById('updateSuccessMessage');
+        const deleteTeacherSuccessMessage = document.getElementById('deleteTeacherSuccessMessage');
+
+        addTeacherForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const teacherFirstname = document.getElementById('teacherFirstname').value;
+            const teacherLastname = document.getElementById('teacherLastname').value;
+            const teacherRoomId = document.getElementById('teacherRoom').value; // Get the room ID
+
+            try {
+                const response = await axios.post('/teachers', { firstname: teacherFirstname, lastname: teacherLastname, room: teacherRoomId }); // Send room ID instead of name
+                if (response.status === 200) {
+                    successMessage.style.display = 'block';
+                    successMessage.innerText = 'Teacher added successfully!';
+                } else {
+                    console.error('Failed to add teacher:', response.statusText);
+                    alert('Failed to add teacher. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error adding teacher:', error.message);
+                alert('Failed to add teacher. Please try again.');
+            }
+        });
+
+        updateTeacherForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const teacherId = document.getElementById('teacherSelectUpdate').value;
+            const newFirstname = document.getElementById('updateTeacherFirstname').value;
+            const newLastname = document.getElementById('updateTeacherLastname').value;
+            const newRoom = document.getElementById('updateTeacherRoom').value;
+
+            try {
+                const response = await axios.put('/teachers', { id: teacherId, firstname: newFirstname, lastname: newLastname, room: newRoom });
+                if (response.status === 200) {
+                    updateSuccessMessage.style.display = 'block';
+                    updateSuccessMessage.innerText = 'Teacher updated successfully!';
+                } else {
+                    console.error('Failed to update teacher:', response.statusText);
+                    alert('Failed to update teacher. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error updating teacher:', error.message);
+                alert('Failed to update teacher. Please try again.');
+            }
+        });
+
+        deleteTeacherForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const teacherId = document.getElementById('teacherSelectDelete').value;
+
+            try {
+                const response = await axios.delete('/teachers', { data: { id: teacherId } });
+                if (response.status === 200) {
+                    deleteTeacherSuccessMessage.style.display = 'block';
+                    deleteTeacherSuccessMessage.innerText = 'Teacher deleted successfully!';
+                } else {
+                    console.error('Failed to delete teacher:', response.statusText);
+                    alert('Failed to delete teacher. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error deleting teacher:', error.message);
+                alert('Failed to delete teacher. Please try again.');
+            }
+        });
+    });
+</script>
+
+<style>
+
+    /* Add spacing between forms */
+    h1 {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    body {
+        background-color: Ivory; /* Background color */
+        color: Deer; /* Default text color */
+        padding-bottom: 5em;
+    }
+
+    form {
+        padding-bottom: 60px;
+    }
+
+    .form-control {
+        width: 50%; /* Adjust the width as needed */
+    }
+
+    .btn-primary {
+        background-color: #67331E !important;
+        border-color: #67331E !important;
+    }
+
+    /* Change button color on hover */
+    .btn-primary:hover {
+        background-color: #8B4513 !important;
+        border-color: #8B4513 !important;
+    }
+
+    .btn-danger {
+        background-color: #b01030 !important;
+        border-color: #b01030 !important;
+    }
+
+    /* Style for the facilities table */
+    .table-container {
+        max-height: 310px; /* Adjust the height as needed */
+        overflow-y: auto;
+        padding-bottom: 20px;
+    }
+
+    .nav-link.active {
+        background-color: #8B4513 !important;
+        color: white !important;
+    }
+
+    .nav-link {
+        color: #8B4513 !important;
+    }
+    .nav-tabs {
+        padding-top: 40px; /* Adjust the value as needed for the desired space */
+    }
+
+    .tab-content {
+        border-top: none;
+        padding: 20px;
+    }
+</style>
+
+</body>
+</html>

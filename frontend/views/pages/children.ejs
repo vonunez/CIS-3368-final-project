@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('../partials/head.ejs') %>
+
+<body>
+
+<%- include('../partials/header.ejs') %>
+
+<div class="container">
+    <h1>Children</h1>
+    <h2>All Children</h2>
+    <div class="child-list">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th> <!-- Child Number -->
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Age</th>
+                        <th>Room</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (children && children.length > 0) { %>
+                        <% children.forEach((child, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td> <!-- Child Number starts from 1 -->
+                                <td><%= child.firstname %></td>
+                                <td><%= child.lastname %></td>
+                                <td><%= child.age %></td>
+                                <!-- Display the room name -->
+                                <td>
+                                    <% if (classrooms && classrooms.length > 0) { %>
+                                        <% const classroom = classrooms.find(cls => cls.id === child.room); %>
+                                        <%= classroom ? classroom.name : 'N/A' %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="5">No children found</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+                
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#addChild">Add</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#updateChild">Update</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#deleteChild">Delete</a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Add Child Form -->
+        <div id="addChild" class="tab-pane fade show active">
+            <h2>Add Child</h2>
+            <!-- Add Child Form -->
+            <form id="addChildForm">
+                <div class="form-group">
+                    <label for="childFirstname">First Name:</label>
+                    <input type="text" class="form-control" id="childFirstname" name="childFirstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="childLastname">Last Name:</label>
+                    <input type="text" class="form-control" id="childLastname" name="childLastname" required>
+                </div>
+                <div class="form-group">
+                    <label for="childAge">Age:</label>
+                    <input type="number" class="form-control" id="childAge" name="childAge" required>
+                </div>
+                <div class="form-group">
+                    <label for="childRoom">Room:</label>
+                    <select class="form-control" id="childRoom" name="childRoom" required>
+                        <!-- Populate this dropdown with existing room names -->
+                        <% classrooms.forEach(room => { %>
+                            <option value="<%= room.id %>"><%= room.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Child</button>
+                <div class="text-success" id="addChildSuccessMessage" style="display: none;"></div> <!-- Success message placeholder -->
+            </form>
+        </div>
+
+        <!-- Update Child Form -->
+        <div id="updateChild" class="tab-pane fade">
+            <h2>Update Child</h2>
+            <!-- Update Child Form -->
+            <form id="updateChildForm">
+                <div class="form-group">
+                    <label for="childSelectUpdate">Select Child:</label>
+                    <select class="form-control" id="childSelectUpdate" name="childSelectUpdate">
+                        <!-- Populate this dropdown with existing children -->
+                        <% children.forEach(child => { %>
+                            <option value="<%= child.id %>"><%= child.firstname %> <%= child.lastname %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="updateChildFirstname">New First Name:</label>
+                    <input type="text" class="form-control" id="updateChildFirstname" name="updateChildFirstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateChildLastname">New Last Name:</label>
+                    <input type="text" class="form-control" id="updateChildLastname" name="updateChildLastname" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateChildAge">New Age:</label>
+                    <input type="number" class="form-control" id="updateChildAge" name="updateChildAge" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateChildRoom">New Room:</label>
+                    <select class="form-control" id="updateChildRoom" name="updateChildRoom" required>
+                        <!-- Populate this dropdown with existing room names -->
+                        <% classrooms.forEach(room => { %>
+                            <option value="<%= room.id %>"><%= room.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Child</button>
+                <div class="text-success" id="updateChildSuccessMessage" style="display: none;"></div> <!-- Success message placeholder -->
+            </form>
+        </div>
+
+        <!-- Delete Child Form -->
+        <div id="deleteChild" class="tab-pane fade">
+            <h2>Delete Child</h2>
+            <!-- Delete Child Form -->
+            <form id="deleteChildForm">
+                <div class="form-group">
+                    <label for="childSelectDelete">Select Child:</label>
+                    <select class="form-control" id="childSelectDelete" name="childSelectDelete">
+                        <!-- Populate this dropdown with existing children -->
+                        <% children.forEach(child => { %>
+                            <option value="<%= child.id %>"><%= child.firstname %> <%= child.lastname %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-danger">Delete Child</button>
+            </form>
+            <div class="text-success" id="deleteChildSuccessMessage" style="display: none;"></div> <!-- Success message placeholder -->
+        </div>
+    </div>
+
+</div>
+
+<%- include('../partials/footer.ejs') %>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addChildForm = document.getElementById('addChildForm');
+        const addChildSuccessMessage = document.getElementById('addChildSuccessMessage');
+        const updateChildForm = document.getElementById('updateChildForm');
+        const updateChildSuccessMessage = document.getElementById('updateChildSuccessMessage');
+        const deleteChildForm = document.getElementById('deleteChildForm');
+        const deleteChildSuccessMessage = document.getElementById('deleteChildSuccessMessage');
+
+        addChildForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const firstname = document.getElementById('childFirstname').value;
+            const lastname = document.getElementById('childLastname').value;
+            const age = document.getElementById('childAge').value;
+            const room = document.getElementById('childRoom').value;
+
+            try {
+                const response = await axios.post('/children', { firstname, lastname, age, room });
+                if (response.status === 200) {
+                    addChildSuccessMessage.style.display = 'block';
+                    addChildSuccessMessage.innerText = 'Child added successfully';
+                } else {
+                    console.error('Failed to add child:', response.statusText);
+                    alert('Failed to add child. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error adding child:', error.message);
+                alert('Failed to add child. Please try again.');
+            }
+        });
+
+        updateChildForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const childId = document.getElementById('childSelectUpdate').value;
+            const firstname = document.getElementById('updateChildFirstname').value;
+            const lastname = document.getElementById('updateChildLastname').value;
+            const age = document.getElementById('updateChildAge').value;
+            const room = document.getElementById('updateChildRoom').value;
+
+            try {
+                const response = await axios.put('/children', { id: childId, firstname, lastname, age, room });
+                if (response.status === 200) {
+                    updateChildSuccessMessage.style.display = 'block';
+                    updateChildSuccessMessage.innerText = 'Child updated successfully';
+                } else {
+                    console.error('Failed to update child:', response.statusText);
+                    alert('Failed to update child. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error updating child:', error.message);
+                alert('Failed to update child. Please try again.');
+            }
+        });
+
+        deleteChildForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const childId = document.getElementById('childSelectDelete').value;
+
+            try {
+                const response = await axios.delete('/children', { data: { id: childId } });
+                if (response.status === 200) {
+                    deleteChildSuccessMessage.style.display = 'block';
+                    deleteChildSuccessMessage.innerText = 'Child deleted successfully';
+                } else {
+                    console.error('Failed to delete child:', response.statusText);
+                    alert('Failed to delete child. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error deleting child:', error.message);
+                alert('Failed to delete child. Please try again.');
+            }
+        });
+    });
+</script>
+
+<style>
+     /* Add spacing between forms */
+     h1 {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        body {
+            background-color: Ivory; /* Background color */
+            color: Deer; /* Default text color */
+            padding-bottom: 5em;
+        }
+
+        form {
+            padding-bottom: 60px;
+        }
+
+        .form-control {
+            width: 50%; /* Adjust the width as needed */
+        }
+
+        .btn-primary {
+            background-color: #67331E !important;
+            border-color: #67331E !important;
+        }
+
+        /* Change button color on hover */
+        .btn-primary:hover {
+            background-color: #8B4513 !important;
+            border-color: #8B4513 !important;
+        }
+
+        .btn-danger {
+            background-color: #b01030 !important;
+            border-color: #b01030 !important;
+        }
+
+        /* Style for the facilities table */
+        .table-container {
+            max-height: 310px; /* Adjust the height as needed */
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        .nav-link.active {
+            background-color: #8B4513 !important;
+            color: white !important;
+        }
+
+
+
+        .nav-link {
+            color: #8B4513 !important;
+        }
+
+        .tab-content {
+            border-top: none;
+            padding: 20px;
+        }
+
+
+        .nav-tabs {
+        padding-top: 40px; /* Adjust the value as needed for the desired space */
+    }
+</style>
+
+</body>
+</html>

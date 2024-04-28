@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daycare Facility Management</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <% if (currentPage && currentPage !== 'index') { %>
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-light bg-custom">
+                <div class="container">
+                    <div class="navbar-logo">
+                        <img class="rounded-circle" src="/assets/picture-2.png" alt="Picture 3">
+                    </div>
+                    <a class="navbar-brand" href="/"></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ml-auto">
+                            <% if (currentPage === 'dashboard') { %>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/logout">Logout</a>
+                                </li>
+                            <% } else { %>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Pages
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="/facilities">Facilities</a>
+                                        <a class="dropdown-item" href="/children">Children</a>
+                                        <a class="dropdown-item" href="/teachers">Teachers</a>
+                                        <a class="dropdown-item" href="/classrooms">Classrooms</a>
+                                        <!-- Add more pages here -->
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="/logout">Logout</a> <!-- Logout link -->
+                                    </div>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        
+            
+        
+    <% } %>
+
+    <!-- Your content goes here -->
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        /* Navbar logo styles */
+        .navbar-logo img {
+            width: 60px;
+            height: 60px;
+        }
+
+        /* Custom background color */
+        .bg-custom {
+            background-color: #493f36 !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important;
+            
+        }
+    </style>
+</body>
+
+</html>

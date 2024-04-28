@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/legacy.png" />
+
+    <title>Dashboard - Daycare Management System</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    
+</head>
+<body>
+    <!-- Include the navbar -->
+    <%- include('../partials/header.ejs') %>
+    <div class="container">
+        <h1 class="text-center">Welcome<br> Admin</br></h1> <!-- Title -->
+    </div>
+    
+    <div class="container dashboard-container" style="display:none;"> <!-- Container with initial display set to none -->
+        
+        <!-- Classroom Section -->
+        <a href="/classrooms" class="circle-image">
+            <img src="/assets/dashboard-1.png" alt="Classrooms" class="img-fluid">
+            <div class="label">Classrooms</div>
+        </a>
+        
+        <!-- Facilities Section -->
+        <a href="/facilities" class="circle-image">
+            <img src="/assets/dashboard-2.png" alt="Facilities" class="img-fluid">
+            <div class="label">Facilities</div>
+        </a>
+
+        <!-- Teachers Section -->
+        <a href="/teachers" class="circle-image">
+            <img src="/assets/dashboard-3.png" alt="Teachers" class="img-fluid">
+            <div class="label">Teachers</div>
+        </a>
+
+        <!-- Children Section -->
+        <a href="/children" class="circle-image">
+            <img src="/assets/dashboard-4.png" alt="Children" class="img-fluid">
+            <div class="label">Children</div>
+        </a>
+    </div>
+    <%- include('../partials/footer.ejs') %>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // After the page loads, fade in the title and the dashboard container
+        window.onload = function() {
+            document.querySelector('.container h1').style.display = 'block';
+            document.querySelector('.dashboard-container').style.display = 'flex';
+        };
+    </script>
+
+<style>
+h1 {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    display: none; /* Hide the title initially */
+}
+
+body {
+    animation: fadeInAnimation ease 3s; /* Apply fade-in animation to the body */
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    background-color: Ivory; /* Background color */
+    color: Deer; /* Default text color */
+    
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Add your other custom CSS styles here */
+.dashboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;
+}
+
+.circle-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 20px;
+    position: relative;
+    transition: transform 0.3s ease-in-out;
+    border: 7px solid transparent; /* Set border to transparent initially */
+    box-sizing: border-box;
+    box-shadow: 0 0 20px #8B4513; /* Add a gold glow with box-shadow */
+
+}
+
+.circle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.circle-image:hover {
+    transform: scale(1.1);
+    
+}
+
+.label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 5px;
+    font-weight: bold;
+    color: black;
+}
+
+</style>
+</body>
+</html>
